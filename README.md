@@ -19,8 +19,8 @@ model, and a Power BI dashboard.
 
 ## Data
 
-[Instacart Market Basket Analysis](https://www.kaggle.com/c/instacart-market-basket-analysis)
-(Kaggle competition, anonymized): ~3.4M orders, 206k users, 49.7k products.
+[Instacart Market Basket Analysis](https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis)
+(Kaggle dataset mirror — the original competition page was retired): ~3.4M orders, 206k users, 49.7k products.
 
 | Table | Rows | Grain |
 |---|---|---|

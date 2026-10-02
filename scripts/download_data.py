@@ -13,7 +13,8 @@ import sys
 from pathlib import Path
 
 RAW = Path(__file__).resolve().parent.parent / "data" / "raw"
-COMPETITION = "instacart-market-basket-analysis"
+# Kaggle retired the original competition page, so pull from the dataset mirror.
+DATASET = "psparks/instacart-market-basket-analysis"
 
 
 def main() -> None:
@@ -22,18 +23,10 @@ def main() -> None:
         import kaggle  # noqa: F401
     except ImportError:
         sys.exit("pip install kaggle, then place your token at ~/.kaggle/kaggle.json")
-    print(f"downloading '{COMPETITION}' -> {RAW} ...")
+    print(f"downloading '{DATASET}' -> {RAW} ...")
     subprocess.run(
-        ["kaggle", "competitions", "download", "-c", COMPETITION,
-         "-p", str(RAW)],
-        check=True,
-    )
-    print("unzipping ...")
-    subprocess.run(
-        [sys.executable, "-c",
-         f"import zipfile, pathlib; "
-         f"[zipfile.ZipFile(p).extractall('{RAW}') or p.unlink() "
-         f"for p in pathlib.Path('{RAW}').glob('*.zip')]"],
+        ["kaggle", "datasets", "download", "-d", DATASET,
+         "-p", str(RAW), "--unzip"],
         check=True,
     )
     print("done:", sorted(p.name for p in RAW.glob("*.csv")))
