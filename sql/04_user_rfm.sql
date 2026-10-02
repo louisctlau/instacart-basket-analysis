@@ -25,8 +25,13 @@ WITH user_stats AS (
         GROUP BY 1
     ) op ON op.order_id = o.order_id
     JOIN (
+        -- max_n over PRIOR orders only: the outer query filters to
+        -- eval_set='prior', and every user's overall max order_number sits
+        -- in train/test, so an unfiltered MAX() never matches and every
+        -- user got recency 9999 on the real data.
         SELECT user_id, MAX(order_number) AS max_n
         FROM orders
+        WHERE eval_set = 'prior'
         GROUP BY 1
     ) mu ON mu.user_id = o.user_id
     WHERE o.eval_set = 'prior'
@@ -38,9 +43,11 @@ scored AS (
         n_orders,
         total_units,
         recency_days,
-        NTILE(5) OVER (ORDER BY recency_days ASC)  AS r_score,  -- low days = high score
-        NTILE(5) OVER (ORDER BY n_orders DESC)     AS f_score,
-        NTILE(5) OVER (ORDER BY total_units DESC)  AS m_score
+        -- NTILE bucket 1 holds the "best" rows by the sort key, so invert:
+        -- the segment CASE below expects high score = recent/frequent/big.
+        6 - NTILE(5) OVER (ORDER BY recency_days ASC)  AS r_score,  -- low days = high score
+        6 - NTILE(5) OVER (ORDER BY n_orders DESC)     AS f_score,
+        6 - NTILE(5) OVER (ORDER BY total_units DESC)  AS m_score
     FROM user_stats
 )
 SELECT
