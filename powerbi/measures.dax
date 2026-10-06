@@ -1,0 +1,55 @@
+// DAX measures — paste into the Power BI model (one measure per table).
+//
+// Benchmarks from the 2026-10-02 warehouse run (real data, 3.21M prior orders):
+//   Overall reorder rate 58.97% · dairy eggs 67.0% · beverages 65.4% ·
+//   produce 65.0% (32.2% of all reordered units) · weekend = 35% of orders.
+// Sanity-check each card against these after import.
+
+// ---------- Core ----------
+
+Total Orders =
+DISTINCTCOUNT ( pb_fact_orders[order_id] )
+
+Total Units =
+SUM ( pb_fact_lines[units] )
+
+Reorder Rate =
+DIVIDE ( SUM ( pb_fact_lines[reordered_units] ), [Total Units] )
+// format: % — expect ~59.0% with no slicers
+
+Avg Basket Size =
+DIVIDE ( [Total Units], [Total Orders] )
+
+Avg Days Between Orders =
+AVERAGE ( pb_fact_orders[days_since_prior_order] )
+
+// ---------- Organic hypothesis (verified: +6.6pp order-line, +4.2pp dept-stratified) ----------
+
+Organic Reorder Rate =
+CALCULATE ( [Reorder Rate], pb_dim_product[is_organic] = TRUE )
+// expect ~63.5%
+
+Conventional Reorder Rate =
+CALCULATE ( [Reorder Rate], pb_dim_product[is_organic] = FALSE )
+// expect ~56.9%
+
+Organic Gap pp =
+( [Organic Reorder Rate] - [Conventional Reorder Rate] ) * 100
+// expect ~+6.6 unfiltered; slice by department — produce should read ~+4.6,
+// bakery ~+4.3, babies ~+3.8; beverages and bulk go negative
+
+// ---------- Time ----------
+
+Weekend Share =
+DIVIDE (
+    CALCULATE ( [Total Orders], pb_fact_orders[day_type] = "Weekend" ),
+    [Total Orders]
+)
+// expect ~35%
+
+// ---------- Affinity (static import of results/basket_affinity.csv) ----------
+
+Top Pair Lift =
+MAXX ( basket_affinity, basket_affinity[lift] )
+// expect ~1696 (cottage-cheese flavor pair); all top-50 are same-category
+// flavor variants — "different flavor of the same staple"

@@ -50,7 +50,8 @@ wrong, not the data.
 
 ## 4. Dashboard spec (4 pages)
 
-**Page 1 — Executive.** KPI cards: Total Orders (3.42M), Reorder Rate
+**Page 1 — Executive.** KPI cards: Total Orders (3.21M prior orders — the
+3.42M figure is the full dataset including train/test eval sets), Reorder Rate
 (~59.0%), Avg Basket Size, Avg Days Between Orders. Bar: reorder rate by
 department — dairy eggs 67.0%, beverages 65.4%, produce 65.0% on top;
 personal care 32.1% at the bottom. Line: orders by day-of-week (weekend

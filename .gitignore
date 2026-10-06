@@ -6,3 +6,4 @@ data/raw/
 data/warehouse.duckdb*
 *.pbix
 .DS_Store
+powerbi/extracts/
