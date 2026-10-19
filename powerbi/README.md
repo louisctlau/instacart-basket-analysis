@@ -84,5 +84,5 @@ organic staples, not the whole assortment.
   only via `pb_fact_lines_full` + the DuckDB ODBC connector.
 - The `train`/`test` eval sets are excluded from the model — features and
   targets for the reorder model come from `prior`/`train` respectively.
-  The trained LightGBM (AUC 0.827) lives in `models/`; its top features
+  The trained LightGBM (AUC 0.817) lives in `models/`; its top features
   (recency ≫ habit strength) echo the RFM story on page 3.
